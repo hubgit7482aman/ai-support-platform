@@ -3,6 +3,7 @@ package com.aman.aiassistant.pro.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import jakarta.persistence.Column;
 
 @Entity
 @Table(name = "businesses")
@@ -12,6 +13,9 @@ public class Business extends BaseEntity {
 
     @Column(nullable = false)
     private String businessName;
+
+    @Column(columnDefinition = "TEXT")
+    private String businessInfo;
 
     private String industry;
 

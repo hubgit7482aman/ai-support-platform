@@ -11,6 +11,8 @@ public class BusinessRequest {
     @NotBlank
     private String businessName;
 
+    private String businessInfo;
+
     private String industry;
 
     private String description;

@@ -10,6 +10,7 @@ import com.aman.aiassistant.pro.entity.SenderType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -31,23 +32,29 @@ public class MessageService {
         message.setContent(request.getContent());
         message.setSenderType(request.getSenderType());
         message.setConversation(conversation);
-
         messageRepository.save(message);
 
-        if (request.getSenderType() == SenderType.CUSTOMER) {
+        List<Message> previousMessages = messageRepository.findTop10ByConversationIdOrderByCreatedAtDesc(request.getConversationId());
+        Collections.reverse(previousMessages);
 
-            String aiReply =
-                    aiService.generateReply(request.getContent());
+        StringBuilder conversationHistory = new StringBuilder();
+        for (Message msg : previousMessages) {
+            conversationHistory.append(msg.getSenderType())
+                    .append(": ")
+                    .append(msg.getContent())
+                    .append("\n");
+        }
+
+        if (request.getSenderType() == SenderType.CUSTOMER) {
+            String aiReply = aiService.generateReply(request.getContent(), conversation.getBusiness().getBusinessInfo(), conversationHistory.toString());
 
             Message aiMessage = new Message();
 
             aiMessage.setContent(aiReply);
             aiMessage.setSenderType(SenderType.AI);
             aiMessage.setConversation(conversation);
-
             messageRepository.save(aiMessage);
         }
-
         return "Message sent successfully";
     }
 

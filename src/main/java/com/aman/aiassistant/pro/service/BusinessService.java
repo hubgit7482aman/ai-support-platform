@@ -28,6 +28,7 @@ public class BusinessService {
         business.setIndustry(request.getIndustry());
         business.setDescription(request.getDescription());
         business.setOwner(user);
+        business.setBusinessInfo(request.getBusinessInfo());
 
         businessRepository.save(business);
 

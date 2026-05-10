@@ -16,8 +16,8 @@ public class AIService {
     private String apiKey;
     private final WebClient.Builder webClientBuilder;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    public String generateReply(String customerMessage) {
 
+    public String generateReply(String customerMessage, String businessInfo, String conversationHistory) {
         try {
             String requestBody = """
                 {
@@ -25,13 +25,13 @@ public class AIService {
                     {
                       "parts": [
                         {
-                          "text": "%s"
+                          "text": "You are an AI customer support assistant.\\n\\nUse the business information and previous conversation history to answer naturally and professionally.\\n\\nBusiness Information:\\n%s\\n\\nConversation History:\\n%s\\n\\nCurrent Customer Question:\\n%s"
                         }
                       ]
                     }
                   ]
                 }
-                """.formatted(customerMessage);
+                """.formatted(businessInfo, conversationHistory, customerMessage);
 
             String response = webClientBuilder.build()
                     .post()
