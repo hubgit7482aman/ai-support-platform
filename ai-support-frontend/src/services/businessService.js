@@ -17,3 +17,17 @@ export const createBusiness = async (businessData) => {
 
     return response.data;
 };
+
+export const getMyBusinesses = async () => {
+
+    const token = localStorage.getItem("token");
+    const response = await axios.get(
+        `${BASE_URL}/my-businesses`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+};

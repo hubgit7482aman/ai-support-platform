@@ -1,16 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 
 import { sendMessage, getMessages } from "../services/messageService";
+import { createConversation } from "../services/conversationService";
 
 function ChatPage() {
 
+    const { businessId } = useParams();
+    const messagesEndRef = useRef(null);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
+    const [conversationId, setConversationId] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-    const conversationId = 3;
 
     const fetchMessages = async () => {
         try {
+            if (!conversationId) return;
             const data = await getMessages(conversationId);
             setMessages(data);
         } catch (error) {
@@ -19,18 +25,43 @@ function ChatPage() {
     };
 
     useEffect(() => {
-        fetchMessages();
+        const initializeConversation = async () => {
+            try {
+                const conversation = await createConversation(businessId);
+                setConversationId(conversation.id);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        initializeConversation();
     }, []);
 
+    useEffect(() => {
+        if (conversationId) {
+            fetchMessages();
+        }
+    }, [conversationId]);
+
+    useEffect(() => {
+
+        messagesEndRef.current?.scrollIntoView({
+            behavior: "smooth",
+        });
+
+    }, [messages]);
     const handleSendMessage = async () => {
 
         if (!input.trim()) return;
+        if (!conversationId) return;
         try {
+            setLoading(true);
             await sendMessage({conversationId, content: input, senderType: "CUSTOMER",});
             setInput("");
-            fetchMessages();
+            await fetchMessages();
         } catch (error) {
             console.error(error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -53,7 +84,13 @@ function ChatPage() {
                             {message.content}
                         </div>
                     ))}
+                    {loading && (
+                        <div className="bg-gray-200 text-black self-start px-4 py-3 rounded-2xl max-w-[200px]">
+                            AI Assistant is typing...
+                        </div>
+                    )}
 
+                    <div ref={messagesEndRef}></div>
                 </div>
 
                 <div className="p-4 border-t flex gap-3">
@@ -63,10 +100,16 @@ function ChatPage() {
                         className="flex-1 border p-3 rounded-xl outline-none"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                handleSendMessage();
+                            }
+                        }}
                     />
                     <button
                         onClick={handleSendMessage}
-                        className="bg-black text-white px-6 rounded-xl"
+                        disabled={loading}
+                        className="bg-black text-white px-6 rounded-xl disabled:opacity-50"
                     >
                         Send
                     </button>

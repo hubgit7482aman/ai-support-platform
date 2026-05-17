@@ -17,7 +17,7 @@ function App() {
 
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
 
-            <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+            <Route path="/chat/:businessId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
 
         </Routes>
       </BrowserRouter>
