@@ -21,7 +21,7 @@ public class Business extends BaseEntity {
 
     private String description;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
 }

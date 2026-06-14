@@ -3,6 +3,7 @@ package com.aman.aiassistant.pro.service;
 import com.aman.aiassistant.pro.dto.SignupRequest;
 import com.aman.aiassistant.pro.entity.Role;
 import com.aman.aiassistant.pro.entity.User;
+import com.aman.aiassistant.pro.exception.ResourceNotFoundException;
 import com.aman.aiassistant.pro.repository.UserRepository;
 import com.aman.aiassistant.pro.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class AuthService {
     public String signup(SignupRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+            throw new ResourceNotFoundException("Email already exists");
         }
 
         User user = new User();
@@ -40,17 +41,15 @@ public class AuthService {
     public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid email or password"));
 
-        boolean passwordMatches =
-                passwordEncoder.matches(request.getPassword(), user.getPassword());
+        boolean passwordMatches = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
         if (!passwordMatches) {
-            throw new RuntimeException("Invalid email or password");
+            throw new ResourceNotFoundException("Invalid email or password");
         }
 
         String token = jwtUtil.generateToken(user.getEmail());
-
         return new AuthResponse(token);
     }
 }

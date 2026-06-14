@@ -1,7 +1,6 @@
 package com.aman.aiassistant.pro.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,12 +8,6 @@ import lombok.Setter;
 @Setter
 public class ConversationRequest {
 
-    @NotBlank
-    private String customerName;
-
-    @Email
-    @NotBlank
-    private String customerEmail;
-
+    @NotNull(message = "Business ID is required")
     private Long businessId;
 }

@@ -31,3 +31,47 @@ export const getMyBusinesses = async () => {
     );
     return response.data;
 };
+
+export const updateBusiness = async (businessId, businessData) => {
+
+    const token = localStorage.getItem("token");
+    const response = await axios.put(
+        `${BASE_URL}/${businessId}`,
+        businessData,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    return response.data;
+};
+
+export const getBusinessById = async (businessId) => {
+
+    const token = localStorage.getItem("token");
+    const response = await axios.get(
+        `${BASE_URL}/${businessId}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+};
+
+export const deleteBusiness = async (businessId) => {
+
+    const token = localStorage.getItem("token");
+    const response = await axios.delete(
+        `${BASE_URL}/${businessId}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+};
